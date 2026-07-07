@@ -1,0 +1,1753 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LifeOS 2026 — Your Life, Optimized</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+:root {
+  --bg: #080c12;
+  --bg2: #0d1320;
+  --bg3: #111927;
+  --surface: #141e2e;
+  --surface2: #1a2640;
+  --border: rgba(255,255,255,0.07);
+  --border2: rgba(255,255,255,0.12);
+  --text: #e8edf5;
+  --text2: #8a9bb5;
+  --text3: #5a6e88;
+  --accent: #00d4ff;
+  --accent2: #0099ff;
+  --green: #00e5a0;
+  --yellow: #ffcc00;
+  --red: #ff4466;
+  --purple: #a855f7;
+  --orange: #ff7a30;
+  --glow: rgba(0,212,255,0.15);
+  --glow2: rgba(0,229,160,0.12);
+  --radius: 16px;
+  --radius-sm: 10px;
+  --shadow: 0 8px 32px rgba(0,0,0,0.4);
+  --font-display: 'Syne', sans-serif;
+  --font-body: 'DM Sans', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+[data-theme="light"] {
+  --bg: #f0f4fa;
+  --bg2: #e8edf5;
+  --bg3: #dde3ed;
+  --surface: #ffffff;
+  --surface2: #f5f7fc;
+  --border: rgba(0,0,0,0.08);
+  --border2: rgba(0,0,0,0.14);
+  --text: #0d1320;
+  --text2: #4a5e7a;
+  --text3: #8a9bb5;
+  --glow: rgba(0,153,255,0.1);
+}
+[data-theme="cyberpunk"] {
+  --bg: #000000;
+  --bg2: #0a0014;
+  --bg3: #0f001e;
+  --surface: #140028;
+  --surface2: #1e003d;
+  --border: rgba(255,0,255,0.15);
+  --border2: rgba(255,0,255,0.25);
+  --text: #fff0ff;
+  --text2: #cc88ff;
+  --text3: #884daa;
+  --accent: #ff00ff;
+  --accent2: #cc00cc;
+  --green: #00ffcc;
+  --glow: rgba(255,0,255,0.2);
+}
+[data-theme="nature"] {
+  --bg: #0a120a;
+  --bg2: #0e1a0e;
+  --bg3: #121e12;
+  --surface: #162416;
+  --surface2: #1c2d1c;
+  --border: rgba(0,255,100,0.1);
+  --border2: rgba(0,255,100,0.18);
+  --text: #e0f0e0;
+  --text2: #80b080;
+  --text3: #4d7a4d;
+  --accent: #44ff88;
+  --accent2: #22cc66;
+  --glow: rgba(68,255,136,0.15);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--font-body);background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;transition:background 0.3s,color 0.3s}
+
+/* ─── LAYOUT ─── */
+.app{display:flex;min-height:100vh}
+.sidebar{width:260px;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100vh;z-index:100;transition:transform 0.3s}
+.main{margin-left:260px;flex:1;min-width:0}
+.topbar{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 28px;height:64px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;backdrop-filter:blur(20px)}
+.content{padding:28px;max-width:1400px}
+
+/* ─── SIDEBAR ─── */
+.sidebar-logo{padding:24px 20px 16px;border-bottom:1px solid var(--border)}
+.logo-mark{font-family:var(--font-display);font-size:22px;font-weight:800;background:linear-gradient(135deg,var(--accent),var(--green));-webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:-0.5px}
+.logo-sub{font-size:10px;color:var(--text3);letter-spacing:2px;text-transform:uppercase;margin-top:2px}
+.nav-section{padding:12px 12px 4px;font-size:9px;color:var(--text3);letter-spacing:2px;text-transform:uppercase;font-weight:600}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 16px;border-radius:var(--radius-sm);cursor:pointer;margin:2px 8px;color:var(--text2);font-size:13.5px;font-weight:500;transition:all 0.2s;position:relative;text-decoration:none}
+.nav-item:hover{background:var(--surface);color:var(--text)}
+.nav-item.active{background:linear-gradient(135deg,rgba(0,212,255,0.15),rgba(0,229,160,0.08));color:var(--accent);border:1px solid rgba(0,212,255,0.2)}
+.nav-item .icon{width:18px;height:18px;flex-shrink:0;opacity:0.8}
+.nav-item.active .icon{opacity:1}
+.nav-badge{margin-left:auto;background:var(--red);color:#fff;font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;font-family:var(--font-mono)}
+.sidebar-bottom{margin-top:auto;padding:16px;border-top:1px solid var(--border)}
+.wellness-score-mini{background:var(--surface);border-radius:var(--radius-sm);padding:14px;text-align:center}
+.wsm-label{font-size:10px;color:var(--text3);letter-spacing:1px;text-transform:uppercase;margin-bottom:6px}
+.wsm-value{font-family:var(--font-display);font-size:32px;font-weight:800;background:linear-gradient(135deg,var(--accent),var(--green));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.wsm-bar{height:4px;background:var(--bg3);border-radius:2px;margin-top:8px;overflow:hidden}
+.wsm-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--green));border-radius:2px;transition:width 1s ease}
+
+/* ─── TOPBAR ─── */
+.topbar-left{display:flex;align-items:center;gap:16px}
+.page-title{font-family:var(--font-display);font-size:18px;font-weight:700;color:var(--text)}
+.topbar-right{display:flex;align-items:center;gap:12px}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:var(--radius-sm);border:none;cursor:pointer;font-family:var(--font-body);font-size:13px;font-weight:500;transition:all 0.2s}
+.btn-primary{background:linear-gradient(135deg,var(--accent2),var(--accent));color:#000;font-weight:600}
+.btn-primary:hover{filter:brightness(1.1);transform:translateY(-1px)}
+.btn-ghost{background:transparent;color:var(--text2);border:1px solid var(--border2)}
+.btn-ghost:hover{background:var(--surface);color:var(--text)}
+.btn-sm{padding:6px 12px;font-size:12px}
+.btn-icon{padding:8px;border-radius:var(--radius-sm);background:var(--surface);border:1px solid var(--border);color:var(--text2);cursor:pointer;transition:all 0.2s}
+.btn-icon:hover{background:var(--surface2);color:var(--text);border-color:var(--border2)}
+.date-chip{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:6px 14px;font-size:12px;color:var(--text2);font-family:var(--font-mono)}
+.avatar{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--accent2),var(--purple));display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;cursor:pointer;flex-shrink:0}
+
+/* ─── PAGES ─── */
+.page{display:none}
+.page.active{display:block;animation:fadeIn 0.3s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* ─── CARDS ─── */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:24px;transition:border-color 0.2s}
+.card:hover{border-color:var(--border2)}
+.card-sm{padding:16px}
+.card-title{font-family:var(--font-display);font-size:14px;font-weight:700;color:var(--text);margin-bottom:16px;display:flex;align-items:center;justify-content:space-between}
+.card-title span{font-family:var(--font-body);font-size:11px;color:var(--text3);font-weight:400}
+
+/* ─── GRID ─── */
+.grid{display:grid;gap:20px}
+.grid-2{grid-template-columns:repeat(2,1fr)}
+.grid-3{grid-template-columns:repeat(3,1fr)}
+.grid-4{grid-template-columns:repeat(4,1fr)}
+
+/* ─── STAT CARDS ─── */
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;position:relative;overflow:hidden;transition:all 0.2s}
+.stat-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,var(--card-color,transparent) 0%,transparent 60%);opacity:0.07;pointer-events:none}
+.stat-card:hover{transform:translateY(-2px);box-shadow:var(--shadow)}
+.stat-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;margin-bottom:12px;background:var(--surface2)}
+.stat-value{font-family:var(--font-display);font-size:28px;font-weight:800;line-height:1;margin-bottom:4px}
+.stat-label{font-size:12px;color:var(--text3);letter-spacing:0.3px}
+.stat-change{font-size:11px;margin-top:6px;font-family:var(--font-mono)}
+.stat-change.up{color:var(--green)}
+.stat-change.down{color:var(--red)}
+
+/* ─── PROGRESS RING ─── */
+.ring-wrap{position:relative;display:inline-flex;align-items:center;justify-content:center}
+.ring-center{position:absolute;text-align:center}
+.ring-val{font-family:var(--font-display);font-weight:800}
+.ring-lbl{font-size:10px;color:var(--text3)}
+
+/* ─── TASKS ─── */
+.task-input-bar{display:flex;gap:10px;margin-bottom:20px}
+.input{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 14px;color:var(--text);font-family:var(--font-body);font-size:14px;outline:none;transition:border-color 0.2s;width:100%}
+.input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--glow)}
+.input::placeholder{color:var(--text3)}
+select.input{cursor:pointer}
+.task-item{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px 16px;margin-bottom:8px;display:flex;align-items:center;gap:12px;transition:all 0.2s;animation:slideIn 0.2s ease}
+@keyframes slideIn{from{opacity:0;transform:translateX(-10px)}to{opacity:1;transform:translateX(0)}}
+.task-item:hover{border-color:var(--border2);background:var(--surface2)}
+.task-item.done{opacity:0.5}
+.task-item.done .task-text{text-decoration:line-through;color:var(--text3)}
+.task-check{width:20px;height:20px;border-radius:6px;border:2px solid var(--border2);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.2s;flex-shrink:0}
+.task-check.checked{background:var(--green);border-color:var(--green)}
+.task-text{flex:1;font-size:14px}
+.task-meta{display:flex;align-items:center;gap:8px;margin-top:4px}
+.tag{font-size:10px;padding:2px 8px;border-radius:20px;font-weight:600;letter-spacing:0.3px}
+.tag-low{background:rgba(0,229,160,0.15);color:var(--green)}
+.tag-medium{background:rgba(255,204,0,0.15);color:var(--yellow)}
+.tag-high{background:rgba(255,68,102,0.15);color:var(--red)}
+.tag-critical{background:rgba(168,85,247,0.2);color:var(--purple)}
+.task-date{font-size:11px;color:var(--text3);font-family:var(--font-mono)}
+.task-del{background:none;border:none;cursor:pointer;color:var(--text3);padding:4px;border-radius:4px;transition:color 0.2s;font-size:14px}
+.task-del:hover{color:var(--red)}
+.empty-state{text-align:center;padding:40px;color:var(--text3)}
+.empty-icon{font-size:40px;margin-bottom:12px}
+
+/* ─── WATER ─── */
+.water-ring{display:flex;justify-content:center;margin:24px 0}
+.quick-add{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:16px}
+.water-btn{background:var(--surface2);border:1px solid var(--border2);border-radius:var(--radius-sm);padding:10px;text-align:center;cursor:pointer;transition:all 0.2s;color:var(--accent);font-weight:600;font-size:13px;font-family:var(--font-mono)}
+.water-btn:hover{background:rgba(0,212,255,0.1);border-color:var(--accent);transform:scale(1.02)}
+.water-log{margin-top:16px}
+.log-item{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px}
+.log-item:last-child{border-bottom:none}
+.log-amount{font-family:var(--font-mono);color:var(--accent);font-weight:600}
+
+/* ─── EXERCISE ─── */
+.exercise-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:20px}
+.ex-type-btn{background:var(--surface2);border:2px solid var(--border);border-radius:var(--radius-sm);padding:14px;text-align:center;cursor:pointer;transition:all 0.2s}
+.ex-type-btn.selected{border-color:var(--accent);background:rgba(0,212,255,0.08)}
+.ex-type-btn .ex-icon{font-size:24px;margin-bottom:6px}
+.ex-type-btn .ex-name{font-size:12px;font-weight:600;color:var(--text2)}
+.ex-log-item{display:flex;justify-content:space-between;align-items:center;padding:12px;background:var(--surface2);border-radius:var(--radius-sm);margin-bottom:8px}
+
+/* ─── MEDICATION ─── */
+.med-item{display:flex;align-items:center;gap:12px;padding:14px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);margin-bottom:8px}
+.med-icon{width:36px;height:36px;border-radius:50%;background:rgba(168,85,247,0.15);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.med-info{flex:1}
+.med-name{font-size:14px;font-weight:600}
+.med-dose{font-size:11px;color:var(--text3);margin-top:2px}
+.med-check{width:28px;height:28px;border-radius:50%;border:2px solid var(--border2);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.2s;flex-shrink:0}
+.med-check.taken{background:var(--green);border-color:var(--green)}
+
+/* ─── FOOD ─── */
+.food-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px;margin-bottom:12px}
+.meal-header{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.meal-icon{font-size:22px}
+.meal-title{font-family:var(--font-display);font-size:15px;font-weight:700}
+.meal-time{font-size:11px;color:var(--text3);margin-top:1px}
+.food-item{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border)}
+.food-item:last-child{border-bottom:none}
+.food-name{font-size:13px}
+.food-macros{display:flex;gap:8px}
+.macro{font-size:10px;padding:2px 6px;border-radius:4px;font-family:var(--font-mono)}
+.macro-cal{background:rgba(255,122,48,0.15);color:var(--orange)}
+.macro-prot{background:rgba(0,212,255,0.12);color:var(--accent)}
+.macro-carb{background:rgba(255,204,0,0.12);color:var(--yellow)}
+
+/* ─── WELLNESS ─── */
+.wellness-factor{margin-bottom:16px}
+.wf-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.wf-name{font-size:13px;font-weight:600}
+.wf-score{font-family:var(--font-mono);font-size:13px;font-weight:700}
+.wf-bar{height:8px;background:var(--bg3);border-radius:4px;overflow:hidden}
+.wf-fill{height:100%;border-radius:4px;transition:width 1.2s cubic-bezier(0.4,0,0.2,1)}
+
+/* ─── INSIGHTS ─── */
+.insight-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px;margin-bottom:12px;display:flex;gap:14px;align-items:flex-start}
+.insight-icon{font-size:24px;flex-shrink:0}
+.insight-text{font-size:13.5px;line-height:1.6;color:var(--text2)}
+.insight-text strong{color:var(--text)}
+
+/* ─── CHARTS ─── */
+.chart-wrap{position:relative;height:200px}
+.chart-wrap-sm{position:relative;height:160px}
+
+/* ─── THEME PICKER ─── */
+.theme-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:12px}
+.theme-opt{border-radius:var(--radius-sm);overflow:hidden;cursor:pointer;border:2px solid transparent;transition:all 0.2s}
+.theme-opt.selected{border-color:var(--accent)}
+.theme-preview{height:56px;display:flex;gap:4px;padding:8px}
+.tp-side{width:20px;border-radius:4px;flex-shrink:0}
+.tp-main{flex:1;border-radius:4px}
+.theme-label{font-size:10px;text-align:center;padding:6px;font-weight:600;color:var(--text2);background:var(--surface)}
+
+/* ─── MODAL ─── */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:200;align-items:center;justify-content:center;backdrop-filter:blur(6px)}
+.modal-overlay.open{display:flex;animation:fadeIn 0.2s ease}
+.modal{background:var(--surface);border:1px solid var(--border2);border-radius:20px;padding:28px;width:100%;max-width:460px;max-height:80vh;overflow-y:auto}
+.modal-title{font-family:var(--font-display);font-size:18px;font-weight:700;margin-bottom:20px;display:flex;justify-content:space-between;align-items:center}
+.modal-close{background:none;border:none;cursor:pointer;color:var(--text3);font-size:20px}
+.form-group{margin-bottom:14px}
+.form-label{font-size:12px;color:var(--text3);margin-bottom:6px;display:block;font-weight:500;letter-spacing:0.3px}
+
+/* ─── SECTION HEADER ─── */
+.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.section-title{font-family:var(--font-display);font-size:20px;font-weight:800}
+.section-sub{font-size:13px;color:var(--text3);margin-top:3px}
+
+/* ─── TABS ─── */
+.tabs{display:flex;gap:4px;background:var(--bg2);border-radius:var(--radius-sm);padding:4px;margin-bottom:20px}
+.tab{padding:8px 16px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:500;color:var(--text3);transition:all 0.2s}
+.tab.active{background:var(--surface);color:var(--text);box-shadow:0 2px 8px rgba(0,0,0,0.2)}
+
+/* ─── STREAK ─── */
+.streak-dots{display:flex;gap:4px;flex-wrap:wrap;margin-top:8px}
+.streak-dot{width:10px;height:10px;border-radius:2px;transition:all 0.3s}
+.streak-dot.done{background:var(--green)}
+.streak-dot.empty{background:var(--surface2)}
+.streak-dot.today{background:var(--accent)}
+
+/* ─── SEPARATOR ─── */
+.sep{height:1px;background:var(--border);margin:20px 0}
+
+/* ─── NOTIFICATION TOAST ─── */
+.toast-container{position:fixed;bottom:24px;right:24px;z-index:300;display:flex;flex-direction:column;gap:8px}
+.toast{background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius-sm);padding:12px 18px;display:flex;align-items:center;gap:10px;font-size:13px;box-shadow:var(--shadow);animation:toastIn 0.3s ease;max-width:300px}
+@keyframes toastIn{from{opacity:0;transform:translateX(40px)}to{opacity:1;transform:translateX(0)}}
+.toast.fadeout{animation:toastOut 0.3s ease forwards}
+@keyframes toastOut{to{opacity:0;transform:translateX(40px)}}
+.toast-icon{font-size:16px;flex-shrink:0}
+
+/* ─── REPORT ─── */
+.report-stat{text-align:center;padding:16px}
+.report-val{font-family:var(--font-display);font-size:36px;font-weight:800}
+.report-lbl{font-size:11px;color:var(--text3);letter-spacing:1px;text-transform:uppercase;margin-top:4px}
+.week-bar{display:flex;gap:6px;align-items:flex-end;height:80px;margin-top:12px}
+.wbar{flex:1;border-radius:4px 4px 0 0;position:relative;transition:height 0.8s ease;cursor:pointer;min-height:4px}
+.wbar-label{position:absolute;bottom:-20px;left:50%;transform:translateX(-50%);font-size:9px;color:var(--text3);white-space:nowrap;font-family:var(--font-mono)}
+.best-week{outline:2px solid var(--yellow);outline-offset:2px}
+
+/* ─── GLOWS & ACCENTS ─── */
+.glow-text{background:linear-gradient(135deg,var(--accent),var(--green));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.dot{width:8px;height:8px;border-radius:50%;display:inline-block}
+
+/* ─── SCROLLBAR ─── */
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:var(--bg2)}
+::-webkit-scrollbar-thumb{background:var(--surface2);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:var(--border2)}
+
+/* ─── RESPONSIVE ─── */
+@media(max-width:900px){
+  .sidebar{transform:translateX(-260px)}
+  .sidebar.open{transform:translateX(0)}
+  .main{margin-left:0}
+  .grid-4{grid-template-columns:repeat(2,1fr)}
+  .grid-3{grid-template-columns:1fr}
+}
+@media(max-width:600px){
+  .grid-2{grid-template-columns:1fr}
+  .content{padding:16px}
+}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+
+<!-- ═══ SIDEBAR ═══ -->
+<nav class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-mark">LifeOS 2026</div>
+    <div class="logo-sub">Your Life, Optimized</div>
+  </div>
+  
+  <div style="overflow-y:auto;flex:1;padding-bottom:8px">
+    <div class="nav-section">Core</div>
+    <a class="nav-item active" onclick="navigate('dashboard')" id="nav-dashboard">
+      <svg class="icon" viewBox="0 0 20 20" fill="currentColor"><path d="M2 4a2 2 0 012-2h4a2 2 0 012 2v4a2 2 0 01-2 2H4a2 2 0 01-2-2V4zm10 0a2 2 0 012-2h4a2 2 0 012 2v4a2 2 0 01-2 2h-4a2 2 0 01-2-2V4zM2 14a2 2 0 012-2h4a2 2 0 012 2v4a2 2 0 01-2 2H4a2 2 0 01-2-2v-4zm10 0a2 2 0 012-2h4a2 2 0 012 2v4a2 2 0 01-2 2h-4a2 2 0 01-2-2v-4z"/></svg>
+      Dashboard
+    </a>
+    <a class="nav-item" onclick="navigate('tasks')" id="nav-tasks">
+      <svg class="icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"/></svg>
+      Tasks
+      <span class="nav-badge" id="task-badge">0</span>
+    </a>
+
+    <div class="nav-section">Health</div>
+    <a class="nav-item" onclick="navigate('water')" id="nav-water">
+      <svg class="icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 9.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 7.414V15a1 1 0 11-2 0V7.414L6.707 9.707a1 1 0 01-1.414 0z" clip-rule="evenodd"/></svg>
+      Water Intake
+    </a>
+    <a class="nav-item" onclick="navigate('exercise')" id="nav-exercise">
+      <svg class="icon" viewBox="0 0 20 20" fill="currentColor"><path d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z"/></svg>
+      Exercise
+    </a>
+    <a class="nav-item" onclick="navigate('medication')" id="nav-medication">
+      <svg class="icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"/></svg>
+      Medication
+    </a>
+    <a class="nav-item" onclick="navigate('nutrition')" id="nav-nutrition">
+      <svg class="icon" viewBox="0 0 20 20" fill="currentColor"><path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/><path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"/></svg>
+      Nutrition AI
+    </a>
+
+    <div class="nav-section">Analytics</div>
+    <a class="nav-item" onclick="navigate('wellness')" id="nav-wellness">
+      <svg class="icon" viewBox="0 0 20 20" fill="currentColor"><path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z"/></svg>
+      Wellness Score
+    </a>
+    <a class="nav-item" onclick="navigate('reports')" id="nav-reports">
+      <svg class="icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V7.414A2 2 0 0015.414 6L12 2.586A2 2 0 0010.586 2H6zm2 10a1 1 0 10-2 0v3a1 1 0 102 0v-3zm2-3a1 1 0 011 1v5a1 1 0 11-2 0v-5a1 1 0 011-1zm4-1a1 1 0 10-2 0v7a1 1 0 102 0V8z" clip-rule="evenodd"/></svg>
+      Reports
+    </a>
+
+    <div class="nav-section">Settings</div>
+    <a class="nav-item" onclick="navigate('themes')" id="nav-themes">
+      <svg class="icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4 2a2 2 0 00-2 2v11a3 3 0 106 0V4a2 2 0 00-2-2H4zm1 14a1 1 0 100-2 1 1 0 000 2zm5-1.757l4.9-4.9a2 2 0 000-2.828L13.485 5.1a2 2 0 00-2.828 0L10 5.757v8.486zM16 18H9.071l6-6H16a2 2 0 012 2v2a2 2 0 01-2 2z" clip-rule="evenodd"/></svg>
+      Themes
+    </a>
+  </div>
+
+  <div class="sidebar-bottom">
+    <div class="wellness-score-mini">
+      <div class="wsm-label">Wellness Score</div>
+      <div class="wsm-value" id="sidebar-wellness">72</div>
+      <div class="wsm-bar"><div class="wsm-fill" id="sidebar-wellness-bar" style="width:72%"></div></div>
+    </div>
+  </div>
+</nav>
+
+<!-- ═══ MAIN ═══ -->
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-left">
+      <button class="btn-icon" onclick="toggleSidebar()" style="display:none" id="menu-btn">☰</button>
+      <div>
+        <div class="page-title" id="page-title">Dashboard</div>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <div class="date-chip" id="current-date">—</div>
+      <button class="btn btn-primary btn-sm" onclick="openQuickAdd()">+ Quick Add</button>
+      <div class="avatar" title="User Profile">U</div>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- ════════════════ DASHBOARD ════════════════ -->
+    <div class="page active" id="page-dashboard">
+      <div class="grid grid-4" style="margin-bottom:20px">
+        <div class="stat-card" style="--card-color:var(--accent)">
+          <div class="stat-icon">📋</div>
+          <div class="stat-value" id="dash-tasks">0</div>
+          <div class="stat-label">Active Tasks</div>
+          <div class="stat-change up" id="dash-tasks-change">↑ Loading...</div>
+        </div>
+        <div class="stat-card" style="--card-color:var(--green)">
+          <div class="stat-icon">💧</div>
+          <div class="stat-value" id="dash-water">0ml</div>
+          <div class="stat-label">Water Today</div>
+          <div class="stat-change" id="dash-water-pct" style="color:var(--accent)">0% of goal</div>
+        </div>
+        <div class="stat-card" style="--card-color:var(--orange)">
+          <div class="stat-icon">🏃</div>
+          <div class="stat-value" id="dash-exercise">0m</div>
+          <div class="stat-label">Exercise Today</div>
+          <div class="stat-change up">↑ Keep going!</div>
+        </div>
+        <div class="stat-card" style="--card-color:var(--purple)">
+          <div class="stat-icon">💊</div>
+          <div class="stat-value" id="dash-meds">0%</div>
+          <div class="stat-label">Med Adherence</div>
+          <div class="stat-change up">Today</div>
+        </div>
+      </div>
+
+      <div class="grid grid-2" style="margin-bottom:20px">
+        <div class="card">
+          <div class="card-title">Weekly Productivity <span>This week</span></div>
+          <div class="chart-wrap"><canvas id="weeklyChart"></canvas></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Activity Breakdown <span>Today</span></div>
+          <div style="display:flex;align-items:center;justify-content:center;gap:24px;margin-top:12px">
+            <div class="ring-wrap">
+              <svg width="120" height="120" viewBox="0 0 120 120">
+                <circle cx="60" cy="60" r="48" fill="none" stroke="var(--bg3)" stroke-width="10"/>
+                <circle cx="60" cy="60" r="48" fill="none" stroke="var(--accent)" stroke-width="10"
+                  stroke-dasharray="301.6" id="donut-tasks-arc" stroke-dashoffset="201"
+                  stroke-linecap="round" transform="rotate(-90 60 60)" style="transition:stroke-dashoffset 1.2s ease"/>
+              </svg>
+              <div class="ring-center">
+                <div class="ring-val" style="font-size:22px;color:var(--accent)" id="donut-tasks-pct">33%</div>
+                <div class="ring-lbl">Tasks Done</div>
+              </div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <div style="display:flex;align-items:center;gap:8px"><span class="dot" style="background:var(--accent)"></span><span style="font-size:12px;color:var(--text2)">Completed</span></div>
+              <div style="display:flex;align-items:center;gap:8px"><span class="dot" style="background:var(--yellow)"></span><span style="font-size:12px;color:var(--text2)">In Progress</span></div>
+              <div style="display:flex;align-items:center;gap:8px"><span class="dot" style="background:var(--surface2)"></span><span style="font-size:12px;color:var(--text2)">Pending</span></div>
+              <div style="display:flex;align-items:center;gap:8px"><span class="dot" style="background:var(--red)"></span><span style="font-size:12px;color:var(--text2)">Overdue</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-bottom:20px">
+        <div class="card-title">AI Insights <span>Powered by LifeOS Intelligence</span></div>
+        <div id="insights-list"></div>
+      </div>
+
+      <div class="grid grid-3">
+        <div class="card card-sm">
+          <div class="card-title" style="font-size:13px">🔥 Current Streak</div>
+          <div style="font-family:var(--font-display);font-size:36px;font-weight:800;color:var(--orange)" id="streak-val">7</div>
+          <div style="font-size:11px;color:var(--text3)">days active</div>
+          <div class="streak-dots" id="streak-dots"></div>
+        </div>
+        <div class="card card-sm">
+          <div class="card-title" style="font-size:13px">🏆 Today's Score</div>
+          <div style="font-family:var(--font-display);font-size:36px;font-weight:800" class="glow-text" id="today-score">72</div>
+          <div style="font-size:11px;color:var(--text3)">out of 100</div>
+          <div style="margin-top:10px;height:6px;background:var(--bg3);border-radius:3px;overflow:hidden">
+            <div id="today-score-bar" style="height:100%;background:linear-gradient(90deg,var(--accent),var(--green));border-radius:3px;width:72%;transition:width 1s ease"></div>
+          </div>
+        </div>
+        <div class="card card-sm">
+          <div class="card-title" style="font-size:13px">📊 Completion Rate</div>
+          <div style="font-family:var(--font-display);font-size:36px;font-weight:800;color:var(--green)" id="completion-rate">0%</div>
+          <div style="font-size:11px;color:var(--text3)">tasks completed</div>
+          <div style="margin-top:10px;height:6px;background:var(--bg3);border-radius:3px;overflow:hidden">
+            <div id="completion-bar" style="height:100%;background:var(--green);border-radius:3px;width:0%;transition:width 1s ease"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════ TASKS ════════════════ -->
+    <div class="page" id="page-tasks">
+      <div class="section-header">
+        <div>
+          <div class="section-title">Task Manager</div>
+          <div class="section-sub" id="tasks-sub">Loading tasks...</div>
+        </div>
+        <button class="btn btn-primary" onclick="openAddTask()">+ New Task</button>
+      </div>
+
+      <div class="grid grid-4" style="margin-bottom:20px">
+        <div class="stat-card" style="--card-color:var(--accent)"><div class="stat-icon">📋</div><div class="stat-value" id="stat-total">0</div><div class="stat-label">Total Tasks</div></div>
+        <div class="stat-card" style="--card-color:var(--green)"><div class="stat-icon">✅</div><div class="stat-value" id="stat-done">0</div><div class="stat-label">Completed</div></div>
+        <div class="stat-card" style="--card-color:var(--yellow)"><div class="stat-icon">⏳</div><div class="stat-value" id="stat-pending">0</div><div class="stat-label">Pending</div></div>
+        <div class="stat-card" style="--card-color:var(--red)"><div class="stat-icon">⚠️</div><div class="stat-value" id="stat-overdue">0</div><div class="stat-label">Overdue</div></div>
+      </div>
+
+      <div class="tabs">
+        <div class="tab active" onclick="filterTasks('all',this)">All</div>
+        <div class="tab" onclick="filterTasks('pending',this)">Pending</div>
+        <div class="tab" onclick="filterTasks('done',this)">Completed</div>
+        <div class="tab" onclick="filterTasks('high',this)">High Priority</div>
+      </div>
+
+      <div id="task-list"></div>
+    </div>
+
+    <!-- ════════════════ WATER ════════════════ -->
+    <div class="page" id="page-water">
+      <div class="section-header">
+        <div><div class="section-title">💧 Water Intake</div><div class="section-sub">Stay hydrated for peak performance</div></div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="font-size:12px;color:var(--text3)">Daily goal:</span>
+          <input type="number" class="input" style="width:90px" id="water-goal-input" value="2500" min="500" max="5000" onchange="updateWaterGoal()">
+          <span style="font-size:12px;color:var(--text3)">ml</span>
+        </div>
+      </div>
+
+      <div class="grid grid-2">
+        <div class="card">
+          <div class="card-title">Today's Hydration</div>
+          <div class="water-ring">
+            <div class="ring-wrap">
+              <svg width="180" height="180" viewBox="0 0 180 180">
+                <circle cx="90" cy="90" r="74" fill="none" stroke="var(--bg3)" stroke-width="14"/>
+                <circle cx="90" cy="90" r="74" fill="none" stroke="url(#waterGrad)" stroke-width="14"
+                  stroke-dasharray="465" id="water-arc" stroke-dashoffset="465"
+                  stroke-linecap="round" transform="rotate(-90 90 90)" style="transition:stroke-dashoffset 1.2s ease"/>
+                <defs><linearGradient id="waterGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" style="stop-color:#00d4ff"/><stop offset="100%" style="stop-color:#00e5a0"/>
+                </linearGradient></defs>
+              </svg>
+              <div class="ring-center">
+                <div class="ring-val" style="font-size:28px;color:var(--accent)" id="water-current">0</div>
+                <div class="ring-lbl">ml consumed</div>
+                <div style="font-size:11px;color:var(--text3);margin-top:4px" id="water-remaining-label">remaining: 2500ml</div>
+              </div>
+            </div>
+          </div>
+          <div class="quick-add">
+            <button class="water-btn" onclick="addWater(250)">+250ml</button>
+            <button class="water-btn" onclick="addWater(500)">+500ml</button>
+            <button class="water-btn" onclick="addWater(750)">+750ml</button>
+            <button class="water-btn" onclick="addWater(1000)">+1L</button>
+          </div>
+          <div style="margin-top:12px;display:flex;gap:8px;align-items:center">
+            <input type="number" class="input" id="custom-water" placeholder="Custom ml..." style="flex:1">
+            <button class="btn btn-ghost" onclick="addCustomWater()">Add</button>
+            <button class="btn btn-ghost" style="color:var(--red)" onclick="resetWater()">Reset</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Intake Log <span>Today</span></div>
+          <div class="water-log" id="water-log">
+            <div class="empty-state"><div class="empty-icon">💧</div>No intake logged yet</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:20px">
+        <div class="card-title">Weekly Hydration <span>Last 7 days</span></div>
+        <div class="chart-wrap"><canvas id="waterChart"></canvas></div>
+      </div>
+    </div>
+
+    <!-- ════════════════ EXERCISE ════════════════ -->
+    <div class="page" id="page-exercise">
+      <div class="section-header">
+        <div><div class="section-title">🏃 Exercise Monitor</div><div class="section-sub">Track your fitness journey</div></div>
+        <button class="btn btn-primary" onclick="openAddExercise()">+ Log Exercise</button>
+      </div>
+
+      <div class="grid grid-4" style="margin-bottom:20px">
+        <div class="stat-card" style="--card-color:var(--orange)"><div class="stat-icon">⏱️</div><div class="stat-value" id="ex-duration">0m</div><div class="stat-label">Duration Today</div></div>
+        <div class="stat-card" style="--card-color:var(--red)"><div class="stat-icon">🔥</div><div class="stat-value" id="ex-calories">0</div><div class="stat-label">Calories Burned</div></div>
+        <div class="stat-card" style="--card-color:var(--green)"><div class="stat-icon">📏</div><div class="stat-value" id="ex-distance">0km</div><div class="stat-label">Distance</div></div>
+        <div class="stat-card" style="--card-color:var(--accent)"><div class="stat-icon">👟</div><div class="stat-value" id="ex-sessions">0</div><div class="stat-label">Sessions</div></div>
+      </div>
+
+      <div class="grid grid-2">
+        <div class="card">
+          <div class="card-title">Exercise Log <span>Today</span></div>
+          <div id="exercise-list">
+            <div class="empty-state"><div class="empty-icon">🏃</div>No exercise logged today</div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">Weekly Activity <span>Calories burned</span></div>
+          <div class="chart-wrap"><canvas id="exerciseChart"></canvas></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════ MEDICATION ════════════════ -->
+    <div class="page" id="page-medication">
+      <div class="section-header">
+        <div><div class="section-title">💊 Medication</div><div class="section-sub">Never miss a dose</div></div>
+        <button class="btn btn-primary" onclick="openAddMed()">+ Add Medicine</button>
+      </div>
+
+      <div class="grid grid-3" style="margin-bottom:20px">
+        <div class="stat-card" style="--card-color:var(--purple)"><div class="stat-icon">💊</div><div class="stat-value" id="med-total">0</div><div class="stat-label">Total Medicines</div></div>
+        <div class="stat-card" style="--card-color:var(--green)"><div class="stat-icon">✅</div><div class="stat-value" id="med-taken">0</div><div class="stat-label">Taken Today</div></div>
+        <div class="stat-card" style="--card-color:var(--red)"><div class="stat-icon">❌</div><div class="stat-value" id="med-missed">0%</div><div class="stat-label">Adherence</div></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Today's Schedule</div>
+        <div id="med-list">
+          <div class="empty-state"><div class="empty-icon">💊</div>No medications added yet</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════ NUTRITION ════════════════ -->
+    <div class="page" id="page-nutrition">
+      <div class="section-header">
+        <div><div class="section-title">🥗 Nutrition AI</div><div class="section-sub">Personalized meal recommendations</div></div>
+        <button class="btn btn-primary" onclick="generateMealPlan()">✨ Regenerate</button>
+      </div>
+
+      <div class="card" style="margin-bottom:20px;background:linear-gradient(135deg,rgba(0,229,160,0.08),rgba(0,212,255,0.05));border-color:rgba(0,229,160,0.2)">
+        <div style="display:flex;gap:16px;align-items:center">
+          <div style="font-size:32px">🤖</div>
+          <div>
+            <div style="font-weight:700;margin-bottom:4px">AI Recommendations</div>
+            <div style="font-size:13px;color:var(--text2)" id="ai-nutrition-tip">Based on your activity and hydration, here's your optimized meal plan for today.</div>
+          </div>
+        </div>
+      </div>
+
+      <div id="meal-plan"></div>
+    </div>
+
+    <!-- ════════════════ WELLNESS ════════════════ -->
+    <div class="page" id="page-wellness">
+      <div class="section-header">
+        <div><div class="section-title">🌟 Wellness Score</div><div class="section-sub">Your holistic health index</div></div>
+      </div>
+
+      <div class="grid grid-2" style="margin-bottom:20px">
+        <div class="card" style="text-align:center">
+          <div class="card-title" style="justify-content:center">Overall Wellness</div>
+          <div class="ring-wrap" style="margin:16px auto">
+            <svg width="160" height="160" viewBox="0 0 160 160">
+              <circle cx="80" cy="80" r="64" fill="none" stroke="var(--bg3)" stroke-width="12"/>
+              <circle cx="80" cy="80" r="64" fill="none" stroke="url(#wellnessGrad)" stroke-width="12"
+                stroke-dasharray="402" id="wellness-arc" stroke-dashoffset="108"
+                stroke-linecap="round" transform="rotate(-90 80 80)" style="transition:stroke-dashoffset 1.2s ease"/>
+              <defs><linearGradient id="wellnessGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" style="stop-color:var(--accent)"/><stop offset="100%" style="stop-color:var(--green)"/>
+              </linearGradient></defs>
+            </svg>
+            <div class="ring-center">
+              <div class="ring-val glow-text" style="font-size:40px" id="wellness-big">72</div>
+              <div class="ring-lbl">/ 100</div>
+            </div>
+          </div>
+          <div style="font-size:12px;color:var(--text3)" id="wellness-label">Good — Keep it up!</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Score Breakdown</div>
+          <div id="wellness-factors"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">30-Day Wellness Trend</div>
+        <div class="chart-wrap"><canvas id="wellnessChart"></canvas></div>
+      </div>
+    </div>
+
+    <!-- ════════════════ REPORTS ════════════════ -->
+    <div class="page" id="page-reports">
+      <div class="section-header">
+        <div><div class="section-title">📊 Reports</div><div class="section-sub">Performance analytics & insights</div></div>
+        <button class="btn btn-primary" onclick="downloadReport()">⬇ Download PDF</button>
+      </div>
+
+      <div class="tabs">
+        <div class="tab active" onclick="switchReport('weekly',this)">Weekly</div>
+        <div class="tab" onclick="switchReport('monthly',this)">Monthly</div>
+      </div>
+
+      <div id="report-content"></div>
+    </div>
+
+    <!-- ════════════════ THEMES ════════════════ -->
+    <div class="page" id="page-themes">
+      <div class="section-header">
+        <div><div class="section-title">🎨 Theme Customization</div><div class="section-sub">Personalize your LifeOS experience</div></div>
+      </div>
+
+      <div class="card" style="margin-bottom:20px">
+        <div class="card-title">Choose Theme</div>
+        <div class="theme-grid" id="theme-grid"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Accent Color</div>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:8px" id="accent-grid"></div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+</div><!-- /app -->
+
+<!-- ═══ MODALS ═══ -->
+<!-- Add Task -->
+<div class="modal-overlay" id="modal-task">
+  <div class="modal">
+    <div class="modal-title">New Task <button class="modal-close" onclick="closeModal('modal-task')">×</button></div>
+    <div class="form-group"><label class="form-label">Task Name *</label><input type="text" class="input" id="task-name" placeholder="What needs to be done?"></div>
+    <div class="grid grid-2" style="gap:12px">
+      <div class="form-group"><label class="form-label">Priority</label>
+        <select class="input" id="task-priority">
+          <option value="low">Low</option><option value="medium" selected>Medium</option>
+          <option value="high">High</option><option value="critical">Critical</option>
+        </select>
+      </div>
+      <div class="form-group"><label class="form-label">Category</label>
+        <select class="input" id="task-category">
+          <option>Work</option><option>Personal</option><option>Health</option><option>Learning</option><option>Other</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group"><label class="form-label">Deadline</label><input type="date" class="input" id="task-deadline"></div>
+    <div class="form-group"><label class="form-label">Notes</label><textarea class="input" id="task-notes" rows="3" placeholder="Additional notes..."></textarea></div>
+    <button class="btn btn-primary" style="width:100%" onclick="saveTask()">Add Task</button>
+  </div>
+</div>
+
+<!-- Add Exercise -->
+<div class="modal-overlay" id="modal-exercise">
+  <div class="modal">
+    <div class="modal-title">Log Exercise <button class="modal-close" onclick="closeModal('modal-exercise')">×</button></div>
+    <div class="exercise-grid">
+      <div class="ex-type-btn selected" onclick="selectExType('Walking',this)"><div class="ex-icon">🚶</div><div class="ex-name">Walking</div></div>
+      <div class="ex-type-btn" onclick="selectExType('Running',this)"><div class="ex-icon">🏃</div><div class="ex-name">Running</div></div>
+      <div class="ex-type-btn" onclick="selectExType('Cycling',this)"><div class="ex-icon">🚴</div><div class="ex-name">Cycling</div></div>
+      <div class="ex-type-btn" onclick="selectExType('Swimming',this)"><div class="ex-icon">🏊</div><div class="ex-name">Swimming</div></div>
+      <div class="ex-type-btn" onclick="selectExType('Weight Training',this)"><div class="ex-icon">🏋️</div><div class="ex-name">Weights</div></div>
+      <div class="ex-type-btn" onclick="selectExType('Yoga',this)"><div class="ex-icon">🧘</div><div class="ex-name">Yoga</div></div>
+    </div>
+    <input type="hidden" id="ex-type" value="Walking">
+    <div class="grid grid-2" style="gap:12px;margin-top:12px">
+      <div class="form-group"><label class="form-label">Duration (min)</label><input type="number" class="input" id="ex-dur" placeholder="30" min="1"></div>
+      <div class="form-group"><label class="form-label">Distance (km)</label><input type="number" class="input" id="ex-dist" placeholder="0.0" step="0.1"></div>
+    </div>
+    <button class="btn btn-primary" style="width:100%;margin-top:8px" onclick="saveExercise()">Log Exercise</button>
+  </div>
+</div>
+
+<!-- Add Medication -->
+<div class="modal-overlay" id="modal-med">
+  <div class="modal">
+    <div class="modal-title">Add Medication <button class="modal-close" onclick="closeModal('modal-med')">×</button></div>
+    <div class="form-group"><label class="form-label">Medicine Name *</label><input type="text" class="input" id="med-name" placeholder="e.g. Vitamin D3"></div>
+    <div class="grid grid-2" style="gap:12px">
+      <div class="form-group"><label class="form-label">Dosage</label><input type="text" class="input" id="med-dose" placeholder="e.g. 500mg"></div>
+      <div class="form-group"><label class="form-label">Time</label><input type="time" class="input" id="med-time" value="08:00"></div>
+    </div>
+    <div class="form-group"><label class="form-label">Frequency</label>
+      <select class="input" id="med-freq"><option>Once daily</option><option>Twice daily</option><option>Three times daily</option><option>Weekly</option></select>
+    </div>
+    <button class="btn btn-primary" style="width:100%;margin-top:8px" onclick="saveMed()">Add Medicine</button>
+  </div>
+</div>
+
+<!-- Quick Add -->
+<div class="modal-overlay" id="modal-quick">
+  <div class="modal">
+    <div class="modal-title">Quick Add <button class="modal-close" onclick="closeModal('modal-quick')">×</button></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <button class="btn btn-ghost" style="padding:20px;flex-direction:column;height:80px;gap:6px" onclick="closeModal('modal-quick');navigate('tasks');openAddTask()">📋<br><span style="font-size:11px">New Task</span></button>
+      <button class="btn btn-ghost" style="padding:20px;flex-direction:column;height:80px;gap:6px" onclick="closeModal('modal-quick');addWater(250);navigate('water')">💧<br><span style="font-size:11px">250ml Water</span></button>
+      <button class="btn btn-ghost" style="padding:20px;flex-direction:column;height:80px;gap:6px" onclick="closeModal('modal-quick');navigate('exercise');openAddExercise()">🏃<br><span style="font-size:11px">Log Exercise</span></button>
+      <button class="btn btn-ghost" style="padding:20px;flex-direction:column;height:80px;gap:6px" onclick="closeModal('modal-quick');navigate('medication');openAddMed()">💊<br><span style="font-size:11px">Add Medication</span></button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast Container -->
+<div class="toast-container" id="toast-container"></div>
+
+<script>
+// ════════════════════════════════════════════════════════
+//  STATE
+// ════════════════════════════════════════════════════════
+const state = {
+  tasks: JSON.parse(localStorage.getItem('lifeos_tasks') || '[]'),
+  water: JSON.parse(localStorage.getItem('lifeos_water') || '{"total":0,"goal":2500,"logs":[]}'),
+  exercise: JSON.parse(localStorage.getItem('lifeos_exercise') || '[]'),
+  medications: JSON.parse(localStorage.getItem('lifeos_meds') || '[]'),
+  theme: localStorage.getItem('lifeos_theme') || 'dark',
+  accent: localStorage.getItem('lifeos_accent') || '#00d4ff',
+  currentPage: 'dashboard',
+  charts: {}
+};
+
+// Check if date changed → reset daily data
+const today = new Date().toDateString();
+if (localStorage.getItem('lifeos_date') !== today) {
+  state.water = { total: 0, goal: state.water.goal || 2500, logs: [] };
+  state.exercise = state.exercise.filter(e => e.date === today);
+  state.medications.forEach(m => { m.takenToday = false; });
+  localStorage.setItem('lifeos_date', today);
+  saveAll();
+}
+
+function saveAll() {
+  localStorage.setItem('lifeos_tasks', JSON.stringify(state.tasks));
+  localStorage.setItem('lifeos_water', JSON.stringify(state.water));
+  localStorage.setItem('lifeos_exercise', JSON.stringify(state.exercise));
+  localStorage.setItem('lifeos_meds', JSON.stringify(state.medications));
+}
+
+// ════════════════════════════════════════════════════════
+//  NAVIGATION
+// ════════════════════════════════════════════════════════
+const pageTitles = {
+  dashboard: 'Dashboard', tasks: 'Task Manager', water: 'Water Intake',
+  exercise: 'Exercise Monitor', medication: 'Medication', nutrition: 'Nutrition AI',
+  wellness: 'Wellness Score', reports: 'Reports', themes: 'Themes'
+};
+
+function navigate(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
+  document.getElementById('nav-' + page)?.classList.add('active');
+  document.getElementById('page-title').textContent = pageTitles[page];
+  state.currentPage = page;
+  if (document.getElementById('sidebar').classList.contains('open')) toggleSidebar();
+  renderPage(page);
+}
+
+function renderPage(page) {
+  if (page === 'dashboard') renderDashboard();
+  else if (page === 'tasks') renderTasks();
+  else if (page === 'water') renderWater();
+  else if (page === 'exercise') renderExercise();
+  else if (page === 'medication') renderMedication();
+  else if (page === 'nutrition') renderNutrition();
+  else if (page === 'wellness') renderWellness();
+  else if (page === 'reports') renderReports();
+  else if (page === 'themes') renderThemes();
+}
+
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+}
+
+// ════════════════════════════════════════════════════════
+//  DATE
+// ════════════════════════════════════════════════════════
+function updateDate() {
+  const now = new Date();
+  const opts = { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' };
+  document.getElementById('current-date').textContent = now.toLocaleDateString('en-US', opts);
+}
+updateDate();
+
+// ════════════════════════════════════════════════════════
+//  WELLNESS SCORE CALCULATION
+// ════════════════════════════════════════════════════════
+function calcWellness() {
+  const total = state.tasks.length;
+  const done = state.tasks.filter(t => t.done).length;
+  const taskScore = total > 0 ? (done / total) * 100 : 50;
+
+  const todayEx = state.exercise.filter(e => e.date === today);
+  const exMins = todayEx.reduce((s, e) => s + (e.duration || 0), 0);
+  const exScore = Math.min(100, (exMins / 30) * 100);
+
+  const waterPct = Math.min(100, (state.water.total / state.water.goal) * 100);
+
+  const meds = state.medications;
+  const medScore = meds.length > 0 ? (meds.filter(m => m.takenToday).length / meds.length) * 100 : 100;
+
+  const eatScore = 75; // default
+
+  const wellness = Math.round(
+    taskScore * 0.30 + exScore * 0.25 + waterPct * 0.15 + medScore * 0.15 + eatScore * 0.15
+  );
+
+  return { wellness, taskScore, exScore, waterPct, medScore, eatScore };
+}
+
+// ════════════════════════════════════════════════════════
+//  DASHBOARD
+// ════════════════════════════════════════════════════════
+function renderDashboard() {
+  const { wellness, taskScore, exScore, waterPct, medScore } = calcWellness();
+
+  // Stats
+  const pending = state.tasks.filter(t => !t.done).length;
+  const done = state.tasks.filter(t => t.done).length;
+  const total = state.tasks.length;
+  const overdue = state.tasks.filter(t => !t.done && t.deadline && new Date(t.deadline) < new Date()).length;
+
+  document.getElementById('dash-tasks').textContent = pending;
+  document.getElementById('dash-tasks-change').textContent = `${overdue} overdue`;
+  document.getElementById('dash-water').textContent = state.water.total + 'ml';
+  document.getElementById('dash-water-pct').textContent = Math.round(waterPct) + '% of goal';
+
+  const todayEx = state.exercise.filter(e => e.date === today);
+  const exMins = todayEx.reduce((s, e) => s + (e.duration || 0), 0);
+  document.getElementById('dash-exercise').textContent = exMins + 'm';
+
+  document.getElementById('dash-meds').textContent = Math.round(medScore) + '%';
+
+  // Completion
+  const rate = total > 0 ? Math.round((done / total) * 100) : 0;
+  document.getElementById('completion-rate').textContent = rate + '%';
+  document.getElementById('completion-bar').style.width = rate + '%';
+
+  // Score
+  document.getElementById('today-score').textContent = wellness;
+  document.getElementById('today-score-bar').style.width = wellness + '%';
+  document.getElementById('sidebar-wellness').textContent = wellness;
+  document.getElementById('sidebar-wellness-bar').style.width = wellness + '%';
+
+  // Donut
+  const arc = document.getElementById('donut-tasks-arc');
+  const circumference = 301.6;
+  const offset = circumference - (circumference * rate / 100);
+  arc.style.strokeDashoffset = offset;
+  document.getElementById('donut-tasks-pct').textContent = rate + '%';
+
+  // Streak
+  renderStreak();
+
+  // Insights
+  renderInsights(wellness, waterPct, exMins, medScore, rate);
+
+  // Weekly chart
+  renderWeeklyChart();
+}
+
+function renderStreak() {
+  const dots = document.getElementById('streak-dots');
+  dots.innerHTML = '';
+  const streak = 7;
+  document.getElementById('streak-val').textContent = streak;
+  for (let i = 0; i < 14; i++) {
+    const d = document.createElement('div');
+    d.className = 'streak-dot ' + (i < 13 ? 'done' : (i === 13 ? 'today' : 'empty'));
+    dots.appendChild(d);
+  }
+}
+
+function renderInsights(wellness, waterPct, exMins, medScore, taskRate) {
+  const list = document.getElementById('insights-list');
+  const insights = [];
+
+  if (taskRate >= 80) insights.push({ icon: '🏆', text: `<strong>Outstanding performance!</strong> You've completed ${taskRate}% of your tasks. You're in the top 10% of productive users today.` });
+  else if (taskRate < 30) insights.push({ icon: '⚡', text: `<strong>Task momentum needed.</strong> Only ${taskRate}% completed. Try breaking tasks into smaller chunks for quick wins.` });
+  else insights.push({ icon: '📈', text: `<strong>Good progress!</strong> ${taskRate}% task completion. You're most productive between 9AM–11AM based on your history.` });
+
+  if (waterPct < 50) insights.push({ icon: '💧', text: `<strong>Hydration alert!</strong> You've only had ${Math.round(waterPct)}% of your water goal. Dehydration reduces focus by up to 20%.` });
+  else insights.push({ icon: '💧', text: `<strong>Well hydrated!</strong> ${Math.round(waterPct)}% of daily goal reached. Your cognitive performance is likely at its peak.` });
+
+  if (exMins === 0) insights.push({ icon: '🏃', text: `<strong>No exercise logged today.</strong> Even a 20-minute walk boosts mood and productivity significantly.` });
+  else insights.push({ icon: '🔥', text: `<strong>Active day!</strong> ${exMins} minutes of exercise logged. Consistency over the next 3 days will build lasting habits.` });
+
+  insights.push({ icon: '🤖', text: `<strong>AI Prediction:</strong> Based on your patterns, your peak productivity window is likely <strong>Tuesday mornings</strong>. Schedule your hardest tasks then.` });
+
+  list.innerHTML = insights.map(i => `
+    <div class="insight-card">
+      <div class="insight-icon">${i.icon}</div>
+      <div class="insight-text">${i.text}</div>
+    </div>`).join('');
+}
+
+function renderWeeklyChart() {
+  const ctx = document.getElementById('weeklyChart').getContext('2d');
+  if (state.charts.weekly) state.charts.weekly.destroy();
+  const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+  const data = [65, 72, 88, 55, 90, 60, 45];
+  state.charts.weekly = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: days,
+      datasets: [{
+        label: 'Productivity %',
+        data: data,
+        backgroundColor: data.map((v, i) => i === 4 ? 'rgba(0,229,160,0.8)' : 'rgba(0,212,255,0.4)'),
+        borderColor: data.map((v, i) => i === 4 ? 'var(--green)' : 'var(--accent)'),
+        borderWidth: 2,
+        borderRadius: 6
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        y: { beginAtZero: true, max: 100, grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#5a6e88', font: { size: 10 } } },
+        x: { grid: { display: false }, ticks: { color: '#5a6e88', font: { size: 10 } } }
+      }
+    }
+  });
+}
+
+// ════════════════════════════════════════════════════════
+//  TASKS
+// ════════════════════════════════════════════════════════
+let taskFilter = 'all';
+
+function renderTasks() {
+  updateTaskStats();
+  renderTaskList();
+}
+
+function updateTaskStats() {
+  const total = state.tasks.length;
+  const done = state.tasks.filter(t => t.done).length;
+  const pending = total - done;
+  const overdue = state.tasks.filter(t => !t.done && t.deadline && new Date(t.deadline) < new Date()).length;
+  document.getElementById('stat-total').textContent = total;
+  document.getElementById('stat-done').textContent = done;
+  document.getElementById('stat-pending').textContent = pending;
+  document.getElementById('stat-overdue').textContent = overdue;
+  document.getElementById('task-badge').textContent = pending;
+  document.getElementById('tasks-sub').textContent = `${done} completed · ${pending} pending · ${overdue} overdue`;
+}
+
+function renderTaskList(filter) {
+  if (filter) taskFilter = filter;
+  let tasks = [...state.tasks];
+  if (taskFilter === 'pending') tasks = tasks.filter(t => !t.done);
+  else if (taskFilter === 'done') tasks = tasks.filter(t => t.done);
+  else if (taskFilter === 'high') tasks = tasks.filter(t => t.priority === 'high' || t.priority === 'critical');
+
+  const list = document.getElementById('task-list');
+  if (!tasks.length) {
+    list.innerHTML = '<div class="empty-state"><div class="empty-icon">📋</div>No tasks found</div>';
+    return;
+  }
+
+  list.innerHTML = tasks.map((t, i) => {
+    const isOverdue = !t.done && t.deadline && new Date(t.deadline) < new Date();
+    const idx = state.tasks.indexOf(t);
+    return `<div class="task-item ${t.done ? 'done' : ''}" id="task-${idx}">
+      <div class="task-check ${t.done ? 'checked' : ''}" onclick="toggleTask(${idx})">
+        ${t.done ? '<svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="white" stroke-width="2" stroke-linecap="round"/></svg>' : ''}
+      </div>
+      <div style="flex:1">
+        <div class="task-text">${t.name}</div>
+        <div class="task-meta">
+          <span class="tag tag-${t.priority}">${t.priority}</span>
+          <span class="tag" style="background:var(--surface2);color:var(--text3)">${t.category || 'Other'}</span>
+          ${t.deadline ? `<span class="task-date ${isOverdue ? '' : ''}" style="${isOverdue ? 'color:var(--red)' : ''}">${isOverdue ? '⚠️ ' : '📅 '}${t.deadline}</span>` : ''}
+        </div>
+        ${t.notes ? `<div style="font-size:11px;color:var(--text3);margin-top:4px">${t.notes}</div>` : ''}
+      </div>
+      <button class="task-del" onclick="deleteTask(${idx})">🗑</button>
+    </div>`;
+  }).join('');
+}
+
+function filterTasks(f, el) {
+  document.querySelectorAll('#page-tasks .tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  renderTaskList(f);
+}
+
+function toggleTask(idx) {
+  state.tasks[idx].done = !state.tasks[idx].done;
+  saveAll();
+  renderTasks();
+  updateDashboardStats();
+  if (state.tasks[idx].done) toast('✅', `Task completed!`, 'var(--green)');
+}
+
+function deleteTask(idx) {
+  state.tasks.splice(idx, 1);
+  saveAll();
+  renderTasks();
+  updateDashboardStats();
+  toast('🗑️', 'Task removed');
+}
+
+function openAddTask() {
+  document.getElementById('task-name').value = '';
+  document.getElementById('task-notes').value = '';
+  document.getElementById('task-deadline').value = '';
+  openModal('modal-task');
+}
+
+function saveTask() {
+  const name = document.getElementById('task-name').value.trim();
+  if (!name) { toast('⚠️', 'Task name required', 'var(--yellow)'); return; }
+  state.tasks.unshift({
+    name,
+    priority: document.getElementById('task-priority').value,
+    category: document.getElementById('task-category').value,
+    deadline: document.getElementById('task-deadline').value,
+    notes: document.getElementById('task-notes').value.trim(),
+    done: false,
+    created: new Date().toISOString()
+  });
+  saveAll();
+  closeModal('modal-task');
+  renderTasks();
+  updateDashboardStats();
+  toast('📋', 'Task added!', 'var(--accent)');
+}
+
+function updateDashboardStats() {
+  if (state.currentPage === 'dashboard') renderDashboard();
+}
+
+// ════════════════════════════════════════════════════════
+//  WATER
+// ════════════════════════════════════════════════════════
+function renderWater() {
+  updateWaterUI();
+  renderWaterChart();
+}
+
+function addWater(ml) {
+  const now = new Date();
+  state.water.total += ml;
+  state.water.logs.push({ ml, time: now.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}) });
+  saveAll();
+  updateWaterUI();
+  toast('💧', `+${ml}ml added!`, 'var(--accent)');
+}
+
+function addCustomWater() {
+  const val = parseInt(document.getElementById('custom-water').value);
+  if (val > 0) { addWater(val); document.getElementById('custom-water').value = ''; }
+}
+
+function resetWater() {
+  state.water.total = 0;
+  state.water.logs = [];
+  saveAll();
+  updateWaterUI();
+}
+
+function updateWaterGoal() {
+  state.water.goal = parseInt(document.getElementById('water-goal-input').value) || 2500;
+  saveAll();
+  updateWaterUI();
+}
+
+function updateWaterUI() {
+  const pct = Math.min(1, state.water.total / state.water.goal);
+  const circumference = 465;
+  document.getElementById('water-arc').style.strokeDashoffset = circumference - (circumference * pct);
+  document.getElementById('water-current').textContent = state.water.total;
+  const rem = Math.max(0, state.water.goal - state.water.total);
+  document.getElementById('water-remaining-label').textContent = `remaining: ${rem}ml`;
+
+  const log = document.getElementById('water-log');
+  if (!state.water.logs.length) {
+    log.innerHTML = '<div class="empty-state"><div class="empty-icon">💧</div>No intake logged yet</div>';
+  } else {
+    log.innerHTML = [...state.water.logs].reverse().map(l =>
+      `<div class="log-item"><span>${l.time}</span><span class="log-amount">+${l.ml}ml</span></div>`
+    ).join('');
+  }
+
+  // Update dashboard too
+  if (document.getElementById('dash-water')) {
+    document.getElementById('dash-water').textContent = state.water.total + 'ml';
+    document.getElementById('dash-water-pct').textContent = Math.round(pct * 100) + '% of goal';
+  }
+}
+
+function renderWaterChart() {
+  const ctx = document.getElementById('waterChart').getContext('2d');
+  if (state.charts.water) state.charts.water.destroy();
+  const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+  const data = [2100, 1800, 2500, 2200, 1600, 2400, state.water.total];
+  state.charts.water = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: days,
+      datasets: [{
+        label: 'Water (ml)',
+        data: data,
+        borderColor: 'var(--accent)',
+        backgroundColor: 'rgba(0,212,255,0.1)',
+        tension: 0.4,
+        fill: true,
+        pointBackgroundColor: 'var(--accent)',
+        pointRadius: 5
+      }, {
+        label: 'Goal',
+        data: Array(7).fill(state.water.goal),
+        borderColor: 'rgba(255,255,255,0.2)',
+        borderDash: [5, 5],
+        tension: 0, fill: false, pointRadius: 0
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#5a6e88', font: { size: 10 } } },
+        x: { grid: { display: false }, ticks: { color: '#5a6e88', font: { size: 10 } } }
+      }
+    }
+  });
+}
+
+// ════════════════════════════════════════════════════════
+//  EXERCISE
+// ════════════════════════════════════════════════════════
+let selectedExType = 'Walking';
+
+function renderExercise() {
+  const todayEx = state.exercise.filter(e => e.date === today);
+  const totalDur = todayEx.reduce((s, e) => s + (e.duration || 0), 0);
+  const totalCal = todayEx.reduce((s, e) => s + (e.calories || 0), 0);
+  const totalDist = todayEx.reduce((s, e) => s + (e.distance || 0), 0);
+
+  document.getElementById('ex-duration').textContent = totalDur + 'm';
+  document.getElementById('ex-calories').textContent = totalCal;
+  document.getElementById('ex-distance').textContent = totalDist.toFixed(1) + 'km';
+  document.getElementById('ex-sessions').textContent = todayEx.length;
+
+  const list = document.getElementById('exercise-list');
+  if (!todayEx.length) {
+    list.innerHTML = '<div class="empty-state"><div class="empty-icon">🏃</div>No exercise logged today</div>';
+  } else {
+    const icons = {Walking:'🚶',Running:'🏃',Cycling:'🚴',Swimming:'🏊','Weight Training':'🏋️',Yoga:'🧘'};
+    list.innerHTML = todayEx.map((e, i) => `
+      <div class="ex-log-item">
+        <div>${icons[e.type] || '💪'} <strong>${e.type}</strong></div>
+        <div style="display:flex;gap:12px;font-size:12px;color:var(--text2)">
+          <span>⏱ ${e.duration}m</span>
+          <span>🔥 ${e.calories} kcal</span>
+          ${e.distance > 0 ? `<span>📏 ${e.distance}km</span>` : ''}
+        </div>
+        <button class="task-del" onclick="deleteExercise(${state.exercise.indexOf(e)})">🗑</button>
+      </div>`).join('');
+  }
+
+  renderExerciseChart();
+}
+
+function selectExType(type, el) {
+  document.querySelectorAll('.ex-type-btn').forEach(b => b.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedExType = type;
+  document.getElementById('ex-type').value = type;
+}
+
+function openAddExercise() {
+  document.getElementById('ex-dur').value = '';
+  document.getElementById('ex-dist').value = '';
+  openModal('modal-exercise');
+}
+
+function saveExercise() {
+  const dur = parseInt(document.getElementById('ex-dur').value);
+  if (!dur) { toast('⚠️', 'Enter duration', 'var(--yellow)'); return; }
+  const dist = parseFloat(document.getElementById('ex-dist').value) || 0;
+  const calMap = { Walking: 4, Running: 9, Cycling: 7, Swimming: 8, 'Weight Training': 5, Yoga: 3 };
+  const cal = Math.round((calMap[selectedExType] || 5) * dur);
+
+  state.exercise.push({
+    type: selectedExType, duration: dur, distance: dist,
+    calories: cal, date: today, time: new Date().toLocaleTimeString()
+  });
+  saveAll();
+  closeModal('modal-exercise');
+  renderExercise();
+  toast('🏃', `${selectedExType} logged! ${cal} kcal burned`, 'var(--orange)');
+}
+
+function deleteExercise(idx) {
+  state.exercise.splice(idx, 1);
+  saveAll();
+  renderExercise();
+}
+
+function renderExerciseChart() {
+  const ctx = document.getElementById('exerciseChart').getContext('2d');
+  if (state.charts.exercise) state.charts.exercise.destroy();
+  const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+  const data = [320, 0, 450, 280, 0, 510, state.exercise.filter(e=>e.date===today).reduce((s,e)=>s+e.calories,0)];
+  state.charts.exercise = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: days,
+      datasets: [{ label: 'Calories', data, backgroundColor: 'rgba(255,122,48,0.5)', borderColor: 'var(--orange)', borderWidth: 2, borderRadius: 6 }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#5a6e88', font: { size: 10 } } },
+        x: { grid: { display: false }, ticks: { color: '#5a6e88', font: { size: 10 } } }
+      }
+    }
+  });
+}
+
+// ════════════════════════════════════════════════════════
+//  MEDICATION
+// ════════════════════════════════════════════════════════
+function renderMedication() {
+  const meds = state.medications;
+  const taken = meds.filter(m => m.takenToday).length;
+  document.getElementById('med-total').textContent = meds.length;
+  document.getElementById('med-taken').textContent = taken;
+  document.getElementById('med-missed').textContent = meds.length > 0 ? Math.round((taken / meds.length) * 100) + '%' : '—';
+
+  const list = document.getElementById('med-list');
+  if (!meds.length) {
+    list.innerHTML = '<div class="empty-state"><div class="empty-icon">💊</div>No medications added yet</div>';
+    return;
+  }
+  list.innerHTML = meds.map((m, i) => `
+    <div class="med-item">
+      <div class="med-icon">💊</div>
+      <div class="med-info">
+        <div class="med-name">${m.name}</div>
+        <div class="med-dose">${m.dose} · ${m.time} · ${m.freq}</div>
+      </div>
+      <div class="med-check ${m.takenToday ? 'taken' : ''}" onclick="toggleMed(${i})">
+        ${m.takenToday ? '✓' : ''}
+      </div>
+      <button class="task-del" onclick="deleteMed(${i})">🗑</button>
+    </div>`).join('');
+}
+
+function openAddMed() {
+  document.getElementById('med-name').value = '';
+  document.getElementById('med-dose').value = '';
+  openModal('modal-med');
+}
+
+function saveMed() {
+  const name = document.getElementById('med-name').value.trim();
+  if (!name) { toast('⚠️', 'Medicine name required', 'var(--yellow)'); return; }
+  state.medications.push({
+    name, dose: document.getElementById('med-dose').value || '—',
+    time: document.getElementById('med-time').value,
+    freq: document.getElementById('med-freq').value,
+    takenToday: false
+  });
+  saveAll();
+  closeModal('modal-med');
+  renderMedication();
+  toast('💊', 'Medication added!', 'var(--purple)');
+}
+
+function toggleMed(idx) {
+  state.medications[idx].takenToday = !state.medications[idx].takenToday;
+  saveAll();
+  renderMedication();
+  if (state.medications[idx].takenToday) toast('✅', `${state.medications[idx].name} marked as taken`, 'var(--green)');
+}
+
+function deleteMed(idx) {
+  state.medications.splice(idx, 1);
+  saveAll();
+  renderMedication();
+}
+
+// ════════════════════════════════════════════════════════
+//  NUTRITION AI
+// ════════════════════════════════════════════════════════
+const mealData = {
+  breakfast: [
+    {name:'Oats with berries & chia seeds',cal:320,prot:'12g',carb:'52g',fat:'8g'},
+    {name:'Greek yogurt parfait with granola',cal:280,prot:'18g',carb:'35g',fat:'6g'},
+    {name:'Spinach & egg white omelette',cal:220,prot:'24g',carb:'8g',fat:'9g'},
+    {name:'Whole grain toast + avocado',cal:310,prot:'9g',carb:'38g',fat:'14g'}
+  ],
+  lunch: [
+    {name:'Grilled chicken salad bowl',cal:420,prot:'38g',carb:'28g',fat:'14g'},
+    {name:'Lentil soup with whole grain bread',cal:380,prot:'22g',carb:'58g',fat:'6g'},
+    {name:'Quinoa & roasted vegetable bowl',cal:440,prot:'16g',carb:'62g',fat:'12g'},
+    {name:'Salmon & brown rice plate',cal:480,prot:'42g',carb:'45g',fat:'16g'}
+  ],
+  dinner: [
+    {name:'Stir-fried tofu with broccoli & rice',cal:380,prot:'24g',carb:'48g',fat:'10g'},
+    {name:'Grilled fish with steamed vegetables',cal:340,prot:'36g',carb:'22g',fat:'12g'},
+    {name:'Turkey meatballs & zucchini noodles',cal:320,prot:'32g',carb:'18g',fat:'11g'},
+    {name:'Chickpea curry with basmati rice',cal:420,prot:'18g',carb:'68g',fat:'9g'}
+  ],
+  snacks: [
+    {name:'Handful of mixed nuts',cal:160,prot:'5g',carb:'7g',fat:'14g'},
+    {name:'Apple with almond butter',cal:190,prot:'4g',carb:'28g',fat:'9g'},
+    {name:'Hummus with carrot sticks',cal:130,prot:'5g',carb:'16g',fat:'6g'},
+    {name:'Protein smoothie',cal:200,prot:'22g',carb:'24g',fat:'3g'}
+  ]
+};
+
+function renderNutrition() {
+  generateMealPlan();
+}
+
+function generateMealPlan() {
+  const plan = document.getElementById('meal-plan');
+  const meals = [
+    { key: 'breakfast', icon: '🌅', title: 'Breakfast', time: '7:00 – 9:00 AM' },
+    { key: 'lunch', icon: '☀️', title: 'Lunch', time: '12:00 – 2:00 PM' },
+    { key: 'dinner', icon: '🌙', title: 'Dinner', time: '6:00 – 8:00 PM' },
+    { key: 'snacks', icon: '🍎', title: 'Snacks', time: 'Anytime' }
+  ];
+
+  const tips = [
+    'Your water intake is low today — hydrating foods like cucumber and watermelon are recommended.',
+    'Post-workout nutrition included — high protein options prioritized.',
+    'Balanced macros optimized for your activity level and wellness goals.',
+    'Anti-inflammatory foods featured based on your health profile.'
+  ];
+  document.getElementById('ai-nutrition-tip').textContent = tips[Math.floor(Math.random() * tips.length)];
+
+  plan.innerHTML = meals.map(m => {
+    const items = [...mealData[m.key]].sort(() => Math.random() - 0.5).slice(0, 2);
+    return `<div class="food-card">
+      <div class="meal-header">
+        <div class="meal-icon">${m.icon}</div>
+        <div><div class="meal-title">${m.title}</div><div class="meal-time">${m.time}</div></div>
+      </div>
+      ${items.map(f => `<div class="food-item">
+        <span class="food-name">${f.name}</span>
+        <div class="food-macros">
+          <span class="macro macro-cal">${f.cal} kcal</span>
+          <span class="macro macro-prot">${f.prot} P</span>
+          <span class="macro macro-carb">${f.carb} C</span>
+        </div>
+      </div>`).join('')}
+    </div>`;
+  }).join('');
+
+  toast('🤖', 'Meal plan updated!', 'var(--green)');
+}
+
+// ════════════════════════════════════════════════════════
+//  WELLNESS
+// ════════════════════════════════════════════════════════
+function renderWellness() {
+  const { wellness, taskScore, exScore, waterPct, medScore, eatScore } = calcWellness();
+
+  const arc = document.getElementById('wellness-arc');
+  const circumference = 402;
+  arc.style.strokeDashoffset = circumference - (circumference * wellness / 100);
+  document.getElementById('wellness-big').textContent = wellness;
+  document.getElementById('sidebar-wellness').textContent = wellness;
+  document.getElementById('sidebar-wellness-bar').style.width = wellness + '%';
+
+  const labels = [
+    {name:'Task Completion', score:taskScore, weight:'30%', color:'var(--accent)'},
+    {name:'Exercise', score:exScore, weight:'25%', color:'var(--orange)'},
+    {name:'Hydration', score:waterPct, weight:'15%', color:'#00d4ff'},
+    {name:'Medication', score:medScore, weight:'15%', color:'var(--purple)'},
+    {name:'Nutrition', score:eatScore, weight:'15%', color:'var(--green)'}
+  ];
+
+  const wl = ['Poor — Focus needed', 'Below Average', 'Average', 'Good — Keep it up!', 'Excellent!', 'Peak Performance! 🏆'];
+  document.getElementById('wellness-label').textContent = wl[Math.min(5, Math.floor(wellness / 20))];
+
+  document.getElementById('wellness-factors').innerHTML = labels.map(l => `
+    <div class="wellness-factor">
+      <div class="wf-header">
+        <span class="wf-name">${l.name} <span style="color:var(--text3);font-weight:400;font-size:11px">(${l.weight})</span></span>
+        <span class="wf-score" style="color:${l.color}">${Math.round(l.score)}%</span>
+      </div>
+      <div class="wf-bar"><div class="wf-fill" style="width:${Math.min(100,Math.round(l.score))}%;background:${l.color}"></div></div>
+    </div>`).join('');
+
+  renderWellnessChart();
+}
+
+function renderWellnessChart() {
+  const ctx = document.getElementById('wellnessChart').getContext('2d');
+  if (state.charts.wellness) state.charts.wellness.destroy();
+  const data = Array.from({length:30}, (_, i) => Math.round(60 + Math.sin(i * 0.4) * 15 + Math.random() * 10));
+  const labels = Array.from({length:30}, (_, i) => i + 1);
+  state.charts.wellness = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels, datasets: [{
+        label: 'Wellness Score',
+        data, borderColor: 'var(--green)', backgroundColor: 'rgba(0,229,160,0.08)',
+        tension: 0.4, fill: true, pointRadius: 0
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        y: { min: 0, max: 100, grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#5a6e88', font: { size: 10 } } },
+        x: { grid: { display: false }, ticks: { color: '#5a6e88', font: { size: 10 } } }
+      }
+    }
+  });
+}
+
+// ════════════════════════════════════════════════════════
+//  REPORTS
+// ════════════════════════════════════════════════════════
+function renderReports(type) {
+  const container = document.getElementById('report-content');
+  const total = state.tasks.length;
+  const done = state.tasks.filter(t => t.done).length;
+  const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+
+  const weekScores = [72, 85, 68, 91];
+  const best = weekScores.indexOf(Math.max(...weekScores));
+
+  container.innerHTML = `
+    <div class="grid grid-4" style="margin-bottom:20px">
+      <div class="card" style="text-align:center">
+        <div class="report-val" style="color:var(--accent)">${total}</div>
+        <div class="report-lbl">Tasks Assigned</div>
+      </div>
+      <div class="card" style="text-align:center">
+        <div class="report-val" style="color:var(--green)">${done}</div>
+        <div class="report-lbl">Completed</div>
+      </div>
+      <div class="card" style="text-align:center">
+        <div class="report-val" style="color:var(--red)">${total - done}</div>
+        <div class="report-lbl">Missed</div>
+      </div>
+      <div class="card" style="text-align:center">
+        <div class="report-val glow-text">${pct}%</div>
+        <div class="report-lbl">Productivity</div>
+      </div>
+    </div>
+
+    <div class="grid grid-2">
+      <div class="card">
+        <div class="card-title">Weekly Performance</div>
+        <div style="position:relative;height:120px">
+          <div class="week-bar">
+            ${weekScores.map((s, i) => `
+              <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px">
+                <div style="font-size:10px;font-family:var(--font-mono);color:${i===best?'var(--yellow)':'var(--text3)'}">${s}%</div>
+                <div class="wbar ${i===best?'best-week':''}" style="height:${s * 0.7}px;background:${i===best?'rgba(255,204,0,0.5)':'rgba(0,212,255,0.3)'};border:1px solid ${i===best?'var(--yellow)':'var(--accent)'};width:100%">
+                  <span class="wbar-label">W${i+1}</span>
+                </div>
+              </div>`).join('')}
+          </div>
+        </div>
+        <div style="margin-top:24px;font-size:12px;color:var(--text3);text-align:center">
+          🏆 <strong style="color:var(--yellow)">Week ${best+1}</strong> was your best performing week (${weekScores[best]}%)
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">AI Performance Summary</div>
+        <div class="insight-card" style="margin-bottom:10px">
+          <div class="insight-icon">📊</div>
+          <div class="insight-text"><strong>Productivity Trend:</strong> ${pct >= 70 ? 'Above average' : 'Below target'}. Your best day was Friday with 90% task completion.</div>
+        </div>
+        <div class="insight-card" style="margin-bottom:10px">
+          <div class="insight-icon">💧</div>
+          <div class="insight-text"><strong>Hydration:</strong> You met your water goal on 4 out of 7 days. Weekends show a pattern of lower intake.</div>
+        </div>
+        <div class="insight-card">
+          <div class="insight-icon">🏃</div>
+          <div class="insight-text"><strong>Exercise:</strong> 3 active days this week. Aim for 5+ days to improve your wellness score significantly.</div>
+        </div>
+      </div>
+    </div>`;
+}
+
+function switchReport(type, el) {
+  document.querySelectorAll('#page-reports .tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  renderReports(type);
+}
+
+function downloadReport() {
+  toast('📄', 'Generating PDF report...', 'var(--accent)');
+  setTimeout(() => {
+    const content = `LifeOS 2026 - Weekly Report\n` +
+      `Date: ${new Date().toLocaleDateString()}\n\n` +
+      `Tasks: ${state.tasks.filter(t=>t.done).length}/${state.tasks.length} completed\n` +
+      `Water: ${state.water.total}ml / ${state.water.goal}ml goal\n` +
+      `Exercise Sessions: ${state.exercise.filter(e=>e.date===today).length}\n` +
+      `Medications: ${state.medications.filter(m=>m.takenToday).length}/${state.medications.length} taken\n` +
+      `Wellness Score: ${calcWellness().wellness}/100\n`;
+    const blob = new Blob([content], { type: 'text/plain' });
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+    a.download = 'LifeOS-Report.txt'; a.click();
+    toast('✅', 'Report downloaded!', 'var(--green)');
+  }, 1000);
+}
+
+// ════════════════════════════════════════════════════════
+//  THEMES
+// ════════════════════════════════════════════════════════
+const themes = [
+  { id: 'dark', label: 'Dark', bg: '#080c12', side: '#0d1320', accent: '#00d4ff' },
+  { id: 'light', label: 'Light', bg: '#f0f4fa', side: '#e8edf5', accent: '#0099ff' },
+  { id: 'cyberpunk', label: 'Cyberpunk', bg: '#000000', side: '#0a0014', accent: '#ff00ff' },
+  { id: 'nature', label: 'Nature', bg: '#0a120a', side: '#0e1a0e', accent: '#44ff88' },
+];
+
+const accents = [
+  { color: '#00d4ff', label: 'Cyan' },
+  { color: '#0099ff', label: 'Blue' },
+  { color: '#00e5a0', label: 'Green' },
+  { color: '#a855f7', label: 'Purple' },
+  { color: '#ff7a30', label: 'Orange' },
+  { color: '#ff4466', label: 'Red' },
+  { color: '#ffcc00', label: 'Gold' },
+  { color: '#ff00ff', label: 'Magenta' },
+];
+
+function renderThemes() {
+  const grid = document.getElementById('theme-grid');
+  grid.innerHTML = themes.map(t => `
+    <div class="theme-opt ${state.theme === t.id ? 'selected' : ''}" onclick="setTheme('${t.id}')">
+      <div class="theme-preview" style="background:${t.bg}">
+        <div class="tp-side" style="background:${t.side}"></div>
+        <div class="tp-main" style="background:${t.accent}22"></div>
+      </div>
+      <div class="theme-label">${t.label}</div>
+    </div>`).join('');
+
+  const ag = document.getElementById('accent-grid');
+  ag.innerHTML = accents.map(a => `
+    <div onclick="setAccent('${a.color}')" style="
+      width:36px;height:36px;border-radius:50%;background:${a.color};cursor:pointer;
+      border:3px solid ${state.accent===a.color?'white':'transparent'};
+      transition:all 0.2s;transform:${state.accent===a.color?'scale(1.2)':'scale(1)'}
+      " title="${a.label}"></div>`).join('');
+}
+
+function setTheme(id) {
+  state.theme = id;
+  localStorage.setItem('lifeos_theme', id);
+  document.documentElement.setAttribute('data-theme', id);
+  renderThemes();
+  toast('🎨', `Theme: ${id}`, 'var(--accent)');
+}
+
+function setAccent(color) {
+  state.accent = color;
+  localStorage.setItem('lifeos_accent', color);
+  document.documentElement.style.setProperty('--accent', color);
+  renderThemes();
+  toast('🎨', 'Accent color updated', color);
+}
+
+// Apply saved theme/accent
+document.documentElement.setAttribute('data-theme', state.theme);
+if (state.accent !== '#00d4ff') document.documentElement.style.setProperty('--accent', state.accent);
+
+// ════════════════════════════════════════════════════════
+//  MODALS
+// ════════════════════════════════════════════════════════
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+function openQuickAdd() { openModal('modal-quick'); }
+
+document.querySelectorAll('.modal-overlay').forEach(m => {
+  m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });
+});
+
+// ════════════════════════════════════════════════════════
+//  TOAST
+// ════════════════════════════════════════════════════════
+function toast(icon, message, color) {
+  const container = document.getElementById('toast-container');
+  const t = document.createElement('div');
+  t.className = 'toast';
+  t.innerHTML = `<span class="toast-icon">${icon}</span><span style="color:${color||'var(--text)'}">${message}</span>`;
+  container.appendChild(t);
+  setTimeout(() => { t.classList.add('fadeout'); setTimeout(() => t.remove(), 300); }, 2800);
+}
+
+// ════════════════════════════════════════════════════════
+//  RESPONSIVE
+// ════════════════════════════════════════════════════════
+function checkResponsive() {
+  const btn = document.getElementById('menu-btn');
+  if (window.innerWidth <= 900) btn.style.display = 'flex';
+  else { btn.style.display = 'none'; document.getElementById('sidebar').classList.remove('open'); }
+}
+window.addEventListener('resize', checkResponsive);
+checkResponsive();
+
+// ════════════════════════════════════════════════════════
+//  INIT
+// ════════════════════════════════════════════════════════
+function init() {
+  renderDashboard();
+  updateTaskStats();
+
+  // Hydration reminder every 45min (simulated toast on load)
+  setTimeout(() => toast('💧', 'Reminder: Drink water!', 'var(--accent)'), 3000);
+
+  // Seed demo data if empty
+  if (!state.tasks.length) {
+    const demo = [
+      {name:'Complete project proposal', priority:'high', category:'Work', deadline: new Date(Date.now()+86400000).toISOString().split('T')[0], notes:'Include budget section', done:false, created: new Date().toISOString()},
+      {name:'30-minute morning run', priority:'medium', category:'Health', deadline:'', notes:'', done:true, created: new Date().toISOString()},
+      {name:'Review quarterly report', priority:'critical', category:'Work', deadline: new Date(Date.now()-86400000).toISOString().split('T')[0], notes:'', done:false, created: new Date().toISOString()},
+      {name:'Read 20 pages', priority:'low', category:'Learning', deadline:'', notes:'Currently reading: Atomic Habits', done:false, created: new Date().toISOString()},
+    ];
+    state.tasks.push(...demo);
+    saveAll();
+    renderTasks();
+    updateTaskStats();
+    document.getElementById('task-badge').textContent = demo.filter(t=>!t.done).length;
+  }
+
+  if (!state.water.total) {
+    state.water.total = 750;
+    state.water.logs = [{ml:250, time:'8:30 AM'},{ml:500, time:'10:15 AM'}];
+    saveAll();
+  }
+
+  if (!state.medications.length) {
+    state.medications.push(
+      {name:'Vitamin D3', dose:'2000 IU', time:'08:00', freq:'Once daily', takenToday:true},
+      {name:'Omega-3', dose:'1000mg', time:'12:00', freq:'Once daily', takenToday:false},
+      {name:'Magnesium', dose:'400mg', time:'21:00', freq:'Once daily', takenToday:false}
+    );
+    saveAll();
+  }
+
+  renderDashboard();
+}
+
+init();
+</script>
+</body>
+</html>
